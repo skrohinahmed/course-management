@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 10px;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            margin: 0 5px;
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab.active {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
+        }
+
+        .content-section {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-container {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .data-table th, .data-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .prerequisites-container {
+            margin-top: 15px;
+        }
+
+        .prerequisite-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .prerequisite-item input {
+            margin-right: 10px;
+            border: none;
+            background: transparent;
+            flex: 1;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+
+        .filters {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filters h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .nav-tab {
+                margin-bottom: 10px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .data-table {
+                font-size: 12px;
+            }
+            
+            .data-table th, .data-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Course Management System</h1>
+            <p>Manage courses and their delivery instances</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('courses')">Courses</button>
+            <button class="nav-tab" onclick="showSection('instances')">Course Instances</button>
+            <button class="nav-tab" onclick="showSection('view-courses')">View All Courses</button>
+            <button class="nav-tab" onclick="showSection('view-instances')">View All Instances</button>
+        </div>
+
+        <!-- Course Management Section -->
+        <div id="courses" class="content-section active">
+            <h2>Course Management</h2>
+            <div class="form-container">
+                <h3>Add New Course</h3>
+                <form id="courseForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="courseId">Course ID</label>
+                            <input type="text" id="courseId" required placeholder="e.g., CS101">
+                        </div>
+                        <div class="form-group">
+                            <label for="courseTitle">Course Title</label>
+                            <input type="text" id="courseTitle" required placeholder="e.g., Introduction to Programming">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="courseDescription">Course Description</label>
+                        <textarea id="courseDescription" required placeholder="Enter course description..."></textarea>
+                    </div>
+                    <div class="prerequisites-container">
+                        <label>Prerequisites</label>
+                        <div id="prerequisitesList">
+                            <div class="prerequisite-item">
+                                <input type="text" placeholder="Enter prerequisite course ID (optional)">
+                                <button type="button" class="btn btn-danger" onclick="removePrerequisite(this)">Remove</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="addPrerequisite()">Add Prerequisite</button>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button type="submit" class="btn btn-primary">Create Course</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetCourseForm()">Reset</button>
+                    </div>
+                </form>
+            </div>
+            <div id="courseAlert"></div>
+        </div>
+
+        <!-- Course Instance Management Section -->
+        <div id="instances" class="content-section">
+            <h2>Course Instance Management</h2>
+            <div class="form-container">
+                <h3>Add New Course Instance</h3>
+                <form id="instanceForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="instanceCourseId">Course ID</label>
+                            <select id="instanceCourseId" required>
+                                <option value="">Select a course...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="instanceYear">Year</label>
+                            <input type="number" id="instanceYear" required min="2020" max="2030" placeholder="e.g., 2024">
+                        </div>
+                        <div class="form-group">
+                            <label for="instanceSemester">Semester</label>
+                            <select id="instanceSemester" required>
+                                <option value="">Select semester...</option>
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button type="submit" class="btn btn-primary">Create Instance</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetInstanceForm()">Reset</button>
+                    </div>
+                </form>
+            </div>
+            <div id="instanceAlert"></div>
+        </div>
+
+        <!-- View All Courses Section -->
+        <div id="view-courses" class="content-section">
+            <h2>All Courses</h2>
+            <button class="btn btn-primary" onclick="loadAllCourses()">Refresh Courses</button>
+            <div id="coursesLoading" class="loading" style="display: none;">Loading courses...</div>
+            <table id="coursesTable" class="data-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Course ID</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Prerequisites</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- View All Instances Section -->
+        <div id="view-instances" class="content-section">
+            <h2>All Course Instances</h2>
+            <div class="filters">
+                <h3>Filter Instances</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="filterYear">Year</label>
+                        <input type="number" id="filterYear" min="2020" max="2030" placeholder="Enter year">
+                    </div>
+                    <div class="form-group">
+                        <label for="filterSemester">Semester</label>
+                        <select id="filterSemester">
+                            <option value="">All semesters</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="loadFilteredInstances()">Apply Filter</button>
+                <button class="btn btn-secondary" onclick="loadAllInstances()">Show All</button>
+            </div>
+            <div id="instancesLoading" class="loading" style="display: none;">Loading instances...</div>
+            <table id="instancesTable" class="data-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Instance ID</th>
+                        <th>Course ID</th>
+                        <th>Year</th>
+                        <th>Semester</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (sectionId === 'instances') {
+                loadCoursesForDropdown();
+            } else if (sectionId === 'view-courses') {
+                loadAllCourses();
+            } else if (sectionId === 'view-instances') {
+                loadAllInstances();
+            }
+        }
+
+        // Alert functions
+        function showAlert(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Course form functions
+        function addPrerequisite() {
+            const list = document.getElementById('prerequisitesList');
+            const div = document.createElement('div');
+            div.className = 'prerequisite-item';
+            div.innerHTML = `
+                <input type="text" placeholder="Enter prerequisite course ID">
+                <button type="button" class="btn btn-danger" onclick="removePrerequisite(this)">Remove</button>
+            `;
+            list.appendChild(div);
+        }
+
+        function removePrerequisite(button) {
+            const list = document.getElementById('prerequisitesList');
+            if (list.children.length > 1) {
+                button.parentElement.remove();
+            }
+        }
+
+        function resetCourseForm() {
+            document.getElementById('courseForm').reset();
+            const list = document.getElementById('prerequisitesList');
+            list.innerHTML = `
+                <div class="prerequisite-item">
+                    <input type="text" placeholder="Enter prerequisite course ID (optional)">
+                    <button type="button" class="btn btn-danger" onclick="removePrerequisite(this)">Remove</button>
+                </div>
+            `;
+        }
+
+        function resetInstanceForm() {
+            document.getElementById('instanceForm').reset();
+        }
+
+        // Course operations
+        document.getElementById('courseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const courseId = document.getElementById('courseId').value;
+            const title = document.getElementById('courseTitle').value;
+            const description = document.getElementById('courseDescription').value;
+            
+            const prerequisiteInputs = document.querySelectorAll('#prerequisitesList input');
+            const prerequisites = Array.from(prerequisiteInputs)
+                .map(input => input.value.trim())
+                .filter(value => value !== '');
+            
+            const courseData = {
+                id: courseId,
+                title: title,
+                description: description,
+                prerequisites: prerequisites
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/courses`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(courseData)
+                });
+                
+                const result = await response.text();
+                
+                if (response.ok) {
+                    showAlert('courseAlert', 'Course created successfully!', 'success');
+                    resetCourseForm();
+                } else {
+                    showAlert('courseAlert', result, 'error');
+                }
+            } catch (error) {
+                showAlert('courseAlert', 'Error creating course: ' + error.message, 'error');
+            }
+        });
+
+        // Instance operations
+        document.getElementById('instanceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const courseId = document.getElementById('instanceCourseId').value;
+            const year = parseInt(document.getElementById('instanceYear').value);
+            const semester = parseInt(document.getElementById('instanceSemester').value);
+            
+            const instanceData = {
+                courseId: courseId,
+                year: year,
+                semester: semester
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/instances`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(instanceData)
+                });
+                
+                const result = await response.text();
+                
+                if (response.ok) {
+                    showAlert('instanceAlert', 'Course instance created successfully!', 'success');
+                    resetInstanceForm();
+                } else {
+                    showAlert('instanceAlert', result, 'error');
+                }
+            } catch (error) {
+                showAlert('instanceAlert', 'Error creating instance: ' + error.message, 'error');
+            }
+        });
+
+        // Load courses for dropdown
+        async function loadCoursesForDropdown() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/courses`);
+                const courses = await response.json();
+                
+                const select = document.getElementById('instanceCourseId');
+                select.innerHTML = '<option value="">Select a course...</option>';
+                
+                courses.forEach(course => {
+                    const option = document.createElement('option');
+                    option.value = course.id;
+                    option.textContent = `${course.id} - ${course.title}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading courses:', error);
+            }
+        }
+
+        // Load all courses
+        async function loadAllCourses() {
+            const loading = document.getElementById('coursesLoading');
+            const table = document.getElementById('coursesTable');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/courses`);
+                const courses = await response.json();
+                
+                const tbody = table.querySelector('tbody');
+                tbody.innerHTML = '';
+                
+                courses.forEach(course => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${course.id}</td>
+                        <td>${course.title}</td>
+                        <td>${course.description}</td>
+                        <td>${course.prerequisites ? course.prerequisites.join(', ') : 'None'}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteCourse('${course.id}')">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                loading.style.display = 'none';
+                table.style.display = 'table';
+            } catch (error) {
+                loading.innerHTML = 'Error loading courses: ' + error.message;
+            }
+        }
+
+        // Load all instances
+        async function loadAllInstances() {
+            const loading = document.getElementById('instancesLoading');
+            const table = document.getElementById('instancesTable');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            
+            try {
+                // Since there's no endpoint to get all instances, we'll need to implement
+                // a workaround or add the endpoint to the backend
+                loading.innerHTML = 'Please use the filter to view instances by year and semester.';
+            } catch (error) {
+                loading.innerHTML = 'Error loading instances: ' + error.message;
+            }
+        }
+
+        // Load filtered instances
+        async function loadFilteredInstances() {
+            const year = document.getElementById('filterYear').value;
+            const semester = document.getElementById('filterSemester').value;
+            
+            if (!year || !semester) {
+                alert('Please select both year and semester to filter instances.');
+                return;
+            }
+            
+            const loading = document.getElementById('instancesLoading');
+            const table = document.getElementById('instancesTable');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/instances/${year}/${semester}`);
+                const instances = await response.json();
+                
+                const tbody = table.querySelector('tbody');
+                tbody.innerHTML = '';
+                
+                instances.forEach(instance => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${instance.id}</td>
+                        <td>${instance.courseId}</td>
+                        <td>${instance.year}</td>
+                        <td>${instance.semester}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteInstance(${instance.year}, ${instance.semester}, '${instance.courseId}')">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                loading.style.display = 'none';
+                table.style.display = 'table';
+            } catch (error) {
+                loading.innerHTML = 'Error loading instances: ' + error.message;
+            }
+        }
+
+        // Delete course
+        async function deleteCourse(courseId) {
+            if (!confirm(`Are you sure you want to delete course ${courseId}?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/courses/${courseId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.text();
+                
+                if (response.ok) {
+                    alert('Course deleted successfully!');
+                    loadAllCourses();
+                } else {
+                    alert('Error deleting course: ' + result);
+                }
+            } catch (error) {
+                alert('Error deleting course: ' + error.message);
+            }
+        }
+
+        // Delete instance
+        async function deleteInstance(year, semester, courseId) {
+            if (!confirm(`Are you sure you want to delete this course instance?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/instances/${year}/${semester}/${courseId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.text();
+                
+                if (response.ok) {
+                    alert('Course instance deleted successfully!');
+                    loadFilteredInstances();
+                } else {
+                    alert('Error deleting instance: ' + result);
+                }
+            } catch (error) {
+                alert('Error deleting instance: ' + error.message);
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCoursesForDropdown();
+        });
+    </script>
+</body>
+</html>
